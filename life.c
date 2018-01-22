@@ -73,8 +73,7 @@ int main()
     int bytes;
     int left, middle, right;
     int x, y = 0;
-    struct coordinates coord_array[100];
-    int array_size = 0;
+    unsigned char drawn_arr[PIXEL_COLS*PIXEL_ROWS];
     signed char data[3];
 
     while (1) {
@@ -85,15 +84,8 @@ int main()
             middle = data[0] & 0x2; // second bit
             right = data[0] & 0x4;  // third bit
 
-            draw_rect(pixel, BLACK, x-2, y-2, x+2, y+2);
+	    if (drawn_arr[x*y] == 0) draw_rect(pixel, BLACK, x, y, x, y);
 	   
-	    for (int i = 0; i < array_size+1; ++i) {
-		int x_temp = coord_array[i].x;
-		int y_temp = coord_array[i].y;
-		draw_rect(pixel, OFF_WHITE, x_temp-2, y_temp-2,
-					    x_temp+2, y_temp+2);
-	    }
-
             x += data[1];
             if (x < 0) x = 0;
             else if (x > PIXEL_COLS) x = PIXEL_COLS;
@@ -101,15 +93,10 @@ int main()
             if (y < 0) y = 0;
             else if (y > PIXEL_ROWS) y = PIXEL_ROWS;
 
-	    if (left) {
-		++array_size;
-		struct coordinates sc2;
-		sc2.x = x;
-		sc2.y = y;
-		coord_array[array_size] = sc2;
-	    }
+	    if (left && drawn_arr[x*y] == 0) drawn_arr[x*y] = 1;
+	    else if (left) drawn_arr[x*y] = 0;
 	    
- 	    draw_rect(pixel, OFF_WHITE, x-2, y-2, x+2, y+2);
+ 	    draw_rect(pixel, OFF_WHITE, x, y, x, y);
         }
     }
 
@@ -135,8 +122,8 @@ void draw_rect(volatile unsigned char *addr_base, unsigned short color,
     unsigned int x = x1;
     unsigned int y = y1;
 
-    while (y < y2) {
-        while (x < x2) {
+    while (y <= y2) {
+        while (x <= x2) {
             *(addr_base + x + (y<<10)) = color;
             ++x;
         }
