@@ -26,6 +26,13 @@ void draw_rect(volatile unsigned char *, unsigned short,
                unsigned int, unsigned int,
                unsigned int, unsigned int);
 
+struct coordinates
+{
+    int x;
+    int y;
+};
+
+
 int main()
 {
     // Create a file descriptor for "/dev/mem"
@@ -36,7 +43,7 @@ int main()
         return 1;
     }
 
-    // Create a file descriptor for "/dev/input/mice"
+    // Create a non-blocking file descriptor for "/dev/input/mice"
     int fd_mouse;
     if ((fd_mouse = open("/dev/input/mice", (O_RDWR|O_SYNC))) == -1) {
         printf("Error: failed to open \"/dev/input/mice\".\n");
@@ -65,8 +72,9 @@ int main()
     // Read data from the mouse
     int bytes;
     int left, middle, right;
-    int draw_flag = 0;
     int x, y = 0;
+    struct coordinates coord_array[100];
+    int array_size = 0;
     signed char data[3];
 
     while (1) {
@@ -77,9 +85,14 @@ int main()
             middle = data[0] & 0x2; // second bit
             right = data[0] & 0x4;  // third bit
 
-            if (!draw_flag) {
-                draw_rect(pixel, BLACK, x-10, y-10, x+10, y+10);
-            } else { draw_flag = 0; }
+            draw_rect(pixel, BLACK, x-2, y-2, x+2, y+2);
+	   
+	    for (int i = 0; i < array_size+1; ++i) {
+		int x_temp = coord_array[i].x;
+		int y_temp = coord_array[i].y;
+		draw_rect(pixel, OFF_WHITE, x_temp-2, y_temp-2,
+					    x_temp+2, y_temp+2);
+	    }
 
             x += data[1];
             if (x < 0) x = 0;
@@ -88,14 +101,15 @@ int main()
             if (y < 0) y = 0;
             else if (y > PIXEL_ROWS) y = PIXEL_ROWS;
 
-            draw_rect(pixel, OFF_WHITE, x-10, y-10, x+10, y+10);
-            printf("left: %d\n", left);
-            
-            if (left) {
-                printf("here");
-                draw_rect(pixel, WHITE, x-10, y-10, x+10, y+10);
-                draw_flag = 1;
-            }
+	    if (left) {
+		++array_size;
+		struct coordinates sc2;
+		sc2.x = x;
+		sc2.y = y;
+		coord_array[array_size] = sc2;
+	    }
+	    
+ 	    draw_rect(pixel, OFF_WHITE, x-2, y-2, x+2, y+2);
         }
     }
 
