@@ -29,7 +29,7 @@
 #define FPGA_CHAR_SPAN        0x00002000
 
 /* Cyclone V FPGA devices */
-#define HW_REGS_BASE          0xff200000
+#define HW_REGS_BASE          0xFF200000
 //#define HW_REGS_SPAN        0x00200000 
 #define HW_REGS_SPAN          0x00005000 
 // === now offsets from the BASE ===

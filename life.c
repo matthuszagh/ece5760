@@ -26,12 +26,6 @@ void draw_rect(volatile unsigned char *, unsigned short,
                unsigned int, unsigned int,
                unsigned int, unsigned int);
 
-struct coordinates
-{
-    int x;
-    int y;
-};
-
 
 int main()
 {
@@ -65,6 +59,19 @@ int main()
         return 1;
     }
 
+    // Map the FPGA switches
+    void *switch_addr;
+    if ((switch_addr = mmap(NULL, HW_REGS_SPAN, (PROT_READ|PROT_WRITE),
+                            MAP_SHARED, fd_mem, HW_REGS_BASE))
+            == MAP_FAILED)
+    {
+        printf("Error: failed to map FPGA switches.\n");
+        close(fd_mem);
+        return 1;
+    }
+
+    volatile unsigned char *switches = (unsigned char *)(switch_addr+SW_BASE);
+
     volatile unsigned char *pixel = (unsigned char *)pixel_buffer_addr;
     volatile unsigned char *pixel_end = (unsigned char *)(pixel_buffer_addr +
                                                           FPGA_ONCHIP_SPAN);
@@ -84,8 +91,10 @@ int main()
             middle = data[0] & 0x2; // second bit
             right = data[0] & 0x4;  // third bit
 
+	    //printf("switch 1:\t	
+
 	    if (drawn_arr[x*y] == 0) draw_rect(pixel, BLACK, x, y, x, y);
-	   
+
             x += data[1];
             if (x < 0) x = 0;
             else if (x > PIXEL_COLS) x = PIXEL_COLS;
@@ -93,8 +102,10 @@ int main()
             if (y < 0) y = 0;
             else if (y > PIXEL_ROWS) y = PIXEL_ROWS;
 
-	    if (left && drawn_arr[x*y] == 0) drawn_arr[x*y] = 1;
-	    else if (left) drawn_arr[x*y] = 0;
+	    if (left && drawn_arr[x*y] == 0 && *(switches+1) == 0) {
+		drawn_arr[x*y] = 1;
+	    }
+	    else if (left && *(switches+1) == 0) drawn_arr[x*y] = 0;
 	    
  	    draw_rect(pixel, OFF_WHITE, x, y, x, y);
         }
