@@ -26,6 +26,9 @@ void draw_rect(volatile unsigned char *, unsigned short,
                unsigned int, unsigned int,
                unsigned int, unsigned int);
 
+void draw_pi(unsigned char *, volatile unsigned char *addr,
+	     unsigned int, unsigned int);
+
 
 int main()
 {
@@ -104,94 +107,8 @@ int main()
 		drawn_arr[x*y] = 1;
 	    }
 	    else if (left && *(switches) != 2) drawn_arr[x*y] = 0;
-	    else if (left && *(switches) == 2) {
-		int cpx2 = x;
-		int cpy2 = y;
-		int cpx1 = cpx2-1;
-		int cpy1 = cpy2-1;
-		int cpx3 = cpx2+1;
-		int cpy3 = cpy2+1;
+	    else if (left && *(switches) == 2) draw_pi(drawn_arr, pixel, x, y);
 
-		// None of the PI pixels go past a boundary
-		if (!(cpx1 < 0 || cpy1 < 0 ||
-		      cpx3 > PIXEL_COLS || cpy3 > PIXEL_ROWS)) {
-		    draw_rect(pixel, OFF_WHITE, cpx3, cpy3, cpx3, cpy3);
-		    drawn_arr[cpx3 * cpy3] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
-		    drawn_arr[cpx3 * cpy2] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx3, cpy1, cpx3, cpy1);
-		    drawn_arr[cpx3 * cpy1] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
-		    drawn_arr[cpx2 * cpy1] = 1;
- 		    draw_rect(pixel, OFF_WHITE, cpx1, cpy1, cpx1, cpy1);
-		    drawn_arr[cpx1 * cpy1] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy2);
-		    drawn_arr[cpx1 * cpy2] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx1, cpy3, cpx1, cpy3);
-		    drawn_arr[cpx1 * cpy3] = 1;
-		}
-		else if (cpx1 < 0) {
-		    if (cpy1 < 0) {  // The left and top edges pass the boundary
-			draw_rect(pixel, OFF_WHITE, cpx3, cpy1, cpx3, cpy1);	
-			drawn_arr[cpx3 * cpy1] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
-			drawn_arr[cpx3 * cpy2] = 1;
-		    }
-		    else {	// Only the left edge passes the boundary
-			draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
-			drawn_arr[cpx2 * cpy1] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx3, cpy1, cpx3, cpy1);
-			drawn_arr[cpx3 * cpy1] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
-			drawn_arr[cpx3 * cpy2] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx3, cpy3, cpx3, cpy3);
-			drawn_arr[cpx3 * cpy3] = 1;
-		    }
-		}
-		else if (cpy1 < 0) {  // Only the top edge passes the boundary
-		    draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy2);
-		    drawn_arr[cpx1 * cpy2] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx1, cpy3, cpx1, cpy3);
-		    drawn_arr[cpx1 * cpy3] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx3, cpy3, cpx3, cpy3);
-		    drawn_arr[cpx3 * cpy3] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
-		    drawn_arr[cpx3 * cpy2] = 1;
-		}
-		else if (cpx3 > PIXEL_COLS) {
-		    if (cpy3 > PIXEL_ROWS) {  // The right and bottom edges pass the boundary
-			draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy2);
-			drawn_arr[cpx1 * cpy2] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx1, cpy1, cpx1, cpy1);	
-			drawn_arr[cpx1 * cpy1] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
-			drawn_arr[cpx2 * cpy1] = 1;
-		    }
-		    else {  // Only the right edge passes the boundary
-			draw_rect(pixel, OFF_WHITE, cpx1, cpy3, cpx1, cpy3);
-			drawn_arr[cpx1 * cpy3] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy2);
-			drawn_arr[cpx1 * cpy2] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx1, cpy1, cpx1, cpy1);
-			drawn_arr[cpx1 * cpy1] = 1;
-			draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
-			drawn_arr[cpx2 * cpy1] = 1;
-		    }
-		}
-		else if (cpy3 > PIXEL_ROWS) { // Only the bottom edge passes the boundary
-		    draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
-		    drawn_arr[cpx3 * cpy2] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx3, cpy1, cpx3, cpy1);
-		    drawn_arr[cpx3 * cpy1] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
-		    drawn_arr[cpx2 * cpy1] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx1, cpy1, cpx1, cpy1);
-		    drawn_arr[cpx1 * cpy1] = 1;
-		    draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy1);
-		    drawn_arr[cpx1 * cpy2] = 1;
-		}
-	    }
-	    
  	    draw_rect(pixel, OFF_WHITE, x, y, x, y);
         }
     }
@@ -225,5 +142,95 @@ void draw_rect(volatile unsigned char *addr_base, unsigned short color,
         }
         x = x1;
         ++y;
+    }
+}
+
+void draw_pi(unsigned char *drawn_arr, volatile unsigned char *pixel,
+	     unsigned int x_middle, unsigned int y_middle)
+{
+    int cpx2 = x_middle;
+    int cpy2 = y_middle;
+    int cpx1 = cpx2-1;
+    int cpy1 = cpy2-1;
+    int cpx3 = cpx2+1;
+    int cpy3 = cpy2+1;
+    
+    // None of the PI pixels go past a boundary
+    if (!(cpx1 < 0 || cpy1 < 0 ||
+          cpx3 > PIXEL_COLS || cpy3 > PIXEL_ROWS)) {
+        draw_rect(pixel, OFF_WHITE, cpx3, cpy3, cpx3, cpy3);
+        drawn_arr[cpx3 * cpy3] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
+        drawn_arr[cpx3 * cpy2] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx3, cpy1, cpx3, cpy1);
+        drawn_arr[cpx3 * cpy1] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
+        drawn_arr[cpx2 * cpy1] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx1, cpy1, cpx1, cpy1);
+        drawn_arr[cpx1 * cpy1] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy2);
+        drawn_arr[cpx1 * cpy2] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx1, cpy3, cpx1, cpy3);
+        drawn_arr[cpx1 * cpy3] = 1;
+    }
+    else if (cpx1 < 0) {
+        if (cpy1 < 0) {  // The left and top edges pass the boundary
+    	draw_rect(pixel, OFF_WHITE, cpx3, cpy1, cpx3, cpy1);	
+    	drawn_arr[cpx3 * cpy1] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
+    	drawn_arr[cpx3 * cpy2] = 1;
+        }
+        else {	// Only the left edge passes the boundary
+    	draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
+    	drawn_arr[cpx2 * cpy1] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx3, cpy1, cpx3, cpy1);
+    	drawn_arr[cpx3 * cpy1] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
+    	drawn_arr[cpx3 * cpy2] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx3, cpy3, cpx3, cpy3);
+    	drawn_arr[cpx3 * cpy3] = 1;
+        }
+    }
+    else if (cpy1 < 0) {  // Only the top edge passes the boundary
+        draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy2);
+        drawn_arr[cpx1 * cpy2] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx1, cpy3, cpx1, cpy3);
+        drawn_arr[cpx1 * cpy3] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx3, cpy3, cpx3, cpy3);
+        drawn_arr[cpx3 * cpy3] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
+        drawn_arr[cpx3 * cpy2] = 1;
+    }
+    else if (cpx3 > PIXEL_COLS) {
+        if (cpy3 > PIXEL_ROWS) {  // The right and bottom edges pass the boundary
+    	draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy2);
+    	drawn_arr[cpx1 * cpy2] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx1, cpy1, cpx1, cpy1);	
+    	drawn_arr[cpx1 * cpy1] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
+    	drawn_arr[cpx2 * cpy1] = 1;
+        }
+        else {  // Only the right edge passes the boundary
+    	draw_rect(pixel, OFF_WHITE, cpx1, cpy3, cpx1, cpy3);
+    	drawn_arr[cpx1 * cpy3] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy2);
+    	drawn_arr[cpx1 * cpy2] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx1, cpy1, cpx1, cpy1);
+    	drawn_arr[cpx1 * cpy1] = 1;
+    	draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
+    	drawn_arr[cpx2 * cpy1] = 1;
+        }
+    }
+    else if (cpy3 > PIXEL_ROWS) { // Only the bottom edge passes the boundary
+        draw_rect(pixel, OFF_WHITE, cpx3, cpy2, cpx3, cpy2);
+        drawn_arr[cpx3 * cpy2] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx3, cpy1, cpx3, cpy1);
+        drawn_arr[cpx3 * cpy1] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx2, cpy1, cpx2, cpy1);
+        drawn_arr[cpx2 * cpy1] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx1, cpy1, cpx1, cpy1);
+        drawn_arr[cpx1 * cpy1] = 1;
+        draw_rect(pixel, OFF_WHITE, cpx1, cpy2, cpx1, cpy1);
+        drawn_arr[cpx1 * cpy2] = 1;
     }
 }
